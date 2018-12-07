@@ -264,6 +264,7 @@ defmodule Day2 do
   defp count_letter(<<h, t::binary>>, counts) do
     count_letter(t, Map.update(counts, h, 1, &(&1 + 1)))
   end
+
   defp count_letter(<<>>, counts) do
     # %{"a" => 2, "b" => 3}
     counts
@@ -289,9 +290,11 @@ defmodule Day2 do
   defp common_letters(<<h, x::binary>>, <<h, y::binary>>, c) do
     common_letters(x, y, c ++ [h])
   end
+
   defp common_letters(<<_, x::binary>>, <<_, y::binary>>, c) do
     common_letters(x, y, c)
   end
+
   defp common_letters(<<>>, <<>>, c) do
     c
   end

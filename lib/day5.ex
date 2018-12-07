@@ -17,6 +17,7 @@ defmodule Day5 do
       |> String.trim()
       |> String.codepoints()
       |> react()
+
     for x <- result |> Enum.map(&String.downcase/1) |> Enum.uniq() do
       result |> remove_x(x) |> react()
     end
@@ -25,13 +26,15 @@ defmodule Day5 do
   end
 
   def react(polymer), do: react(polymer, [], false)
+
   def react([h1, h2 | t], remain, triggered) do
     if trigger?(h1, h2) do
       react(t, remain, true)
     else
-      react([h2|t], [h1|remain], triggered)
+      react([h2 | t], [h1 | remain], triggered)
     end
   end
+
   def react(polymer, remain, triggered) do
     if triggered do
       react(Enum.reverse(polymer ++ remain), [], false)
@@ -47,8 +50,9 @@ defmodule Day5 do
   def test do
     result =
       "dabAcCaCBAcCcaDA"
-        |> String.codepoints()
-        |> react([], false)
+      |> String.codepoints()
+      |> react([], false)
+
     10 = Enum.count(result)
     6 = remove_x(result, "a") |> react() |> Enum.count()
     8 = remove_x(result, "b") |> react() |> Enum.count()

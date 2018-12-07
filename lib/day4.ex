@@ -10,6 +10,7 @@ defmodule Day4 do
     {date, " " <> str} = String.split_at(str, 5)
     {time, "] " <> str} = String.split_at(str, 5)
     event = parse_event(str)
+
     %{
       date: int_tuple(date, "-"),
       time: int_tuple(time, ":"),
@@ -24,8 +25,9 @@ defmodule Day4 do
 
   def parse_event("falls asleep" <> _), do: :sleep
   def parse_event("wakes up" <> _), do: :wake
+
   def parse_event("Guard #" <> str) do
-    [n|_] = String.split(str)
+    [n | _] = String.split(str)
     {:shift, String.to_integer(n)}
   end
 
@@ -37,23 +39,40 @@ defmodule Day4 do
 
   # in sleep table, {1, 2} presents sleep 2 minutes
   # (logs, id, last_sleep, result)
-  def count_sleep([ %{event: {:shift, id}} | logs], _, nil, result) do
+  def count_sleep([%{event: {:shift, id}} | logs], _, nil, result) do
     count_sleep(logs, id, nil, result)
   end
-  def count_sleep([ %{event: :sleep, time: {_, begin}} | logs], id, _, result) do
+
+  def count_sleep([%{event: :sleep, time: {_, begin}} | logs], id, _, result) do
     count_sleep(logs, id, begin, result)
   end
-  def count_sleep([ %{event: :wake, time: {_, tend}} | logs], id, begin, result) when begin != nil do
-    count_sleep(logs, id, nil, Map.update(result, id, [{begin, tend-1}], fn v -> [{begin, tend-1}|v] end))
+
+  def count_sleep([%{event: :wake, time: {_, tend}} | logs], id, begin, result)
+      when begin != nil do
+    count_sleep(
+      logs,
+      id,
+      nil,
+      Map.update(result, id, [{begin, tend - 1}], fn v -> [{begin, tend - 1} | v] end)
+    )
   end
-  def count_sleep([ %{event: {:shift, id}} | logs], old_id, begin, result) when begin != nil do
-    count_sleep(logs, id, nil, Map.update(result, old_id, [{begin, 59}], fn v -> [{begin, 59}|v] end))
+
+  def count_sleep([%{event: {:shift, id}} | logs], old_id, begin, result) when begin != nil do
+    count_sleep(
+      logs,
+      id,
+      nil,
+      Map.update(result, old_id, [{begin, 59}], fn v -> [{begin, 59} | v] end)
+    )
   end
+
   def count_sleep([], _, _, result), do: result
 
   def find_laziest(table) do
     table
-    |> Enum.map(fn {id, times} -> {id, Enum.reduce(times, 0, fn {a, z}, acc -> acc+z-a+1 end)} end)
+    |> Enum.map(fn {id, times} ->
+      {id, Enum.reduce(times, 0, fn {a, z}, acc -> acc + z - a + 1 end)}
+    end)
     |> Enum.max_by(fn {_, sum} -> sum end)
   end
 
@@ -87,6 +106,7 @@ defmodule Day4 do
       |> Stream.map(fn {id, list} -> {id, sleep_frequency(list)} end)
       |> Stream.map(fn {id, freq} -> {id, Enum.max_by(freq, fn {_, v} -> v end)} end)
       |> Enum.max_by(fn {_, {_, t}} -> t end)
+
     id * m
   end
 end

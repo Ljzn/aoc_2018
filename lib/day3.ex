@@ -9,6 +9,7 @@ defmodule Day3 do
     ["#" <> id, "@", edge, size] = String.split(r)
     [left, top] = edge |> String.trim_trailing(":") |> String.split(",")
     [wide, tall] = String.split(size, "x")
+
     %{
       id: String.to_integer(id),
       left: String.to_integer(left),
@@ -19,7 +20,7 @@ defmodule Day3 do
   end
 
   def blocks(c) do
-    for x <- c.left..(c.left+c.wide-1), y <- c.top..(c.top+c.tall-1) do
+    for x <- c.left..(c.left + c.wide - 1), y <- c.top..(c.top + c.tall - 1) do
       {x, y}
     end
   end
@@ -32,7 +33,6 @@ defmodule Day3 do
     p = %{id: 5, left: 140, top: 218, wide: 18, tall: 12} = parse("#5 @ 140,218: 18x12")
     occupy(%{}, p)
   end
-
 
   def run do
     @input
@@ -58,5 +58,4 @@ defmodule Day3 do
     {id, _} = Enum.find(block_info, fn {_, bs} -> Enum.all?(bs, fn b -> b in uniq_blocks end) end)
     id
   end
-
 end
