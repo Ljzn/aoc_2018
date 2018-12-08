@@ -70,11 +70,14 @@ defmodule Day7 do
   @init_workers List.duplicate(:idle, 5)
 
   def loop2(map), do: loop2(map, 0, @init_workers, [])
+
   def loop2(map, second, workers, done) do
     {workers1, done1} = do_work(workers, map, done) |> IO.inspect()
+
     case workers1 do
       @init_workers ->
         second
+
       _ ->
         map1 = Enum.reduce(done1, map, fn x, acc -> Map.delete(acc, x) end)
         loop2(map1, second + 1, workers1, done1)
@@ -82,19 +85,19 @@ defmodule Day7 do
   end
 
   def test do
-      """
-      Step C must be finished before step A can begin.
-      Step C must be finished before step F can begin.
-      Step A must be finished before step B can begin.
-      Step A must be finished before step D can begin.
-      Step B must be finished before step E can begin.
-      Step D must be finished before step E can begin.
-      Step F must be finished before step E can begin.
-      """
-      |> String.split("\n", trim: true)
-      |> Enum.map(&parse/1)
-      |> requires_map()
-      |> loop2()
+    """
+    Step C must be finished before step A can begin.
+    Step C must be finished before step F can begin.
+    Step A must be finished before step B can begin.
+    Step A must be finished before step D can begin.
+    Step B must be finished before step E can begin.
+    Step D must be finished before step E can begin.
+    Step F must be finished before step E can begin.
+    """
+    |> String.split("\n", trim: true)
+    |> Enum.map(&parse/1)
+    |> requires_map()
+    |> loop2()
   end
 
   def do_work(workers, map, done) do
@@ -105,34 +108,41 @@ defmodule Day7 do
 
   defp assign_jobs(workers, jobs, done), do: assign_jobs(workers, jobs, done, [])
   defp assign_jobs([], _jobs, done, new_workers), do: {new_workers |> Enum.reverse(), done}
-  defp assign_jobs([:idle|workers], [j|jobs], done, new_workers) do
+
+  defp assign_jobs([:idle | workers], [j | jobs], done, new_workers) do
     if time(j) == 1 do
-      assign_jobs(workers, jobs, [j|done], [{j, 0}|new_workers])
+      assign_jobs(workers, jobs, [j | done], [{j, 0} | new_workers])
     else
-      assign_jobs(workers, jobs, done, [{j, 0}|new_workers])
+      assign_jobs(workers, jobs, done, [{j, 0} | new_workers])
     end
   end
-  defp assign_jobs([:idle|workers], [], done, new_workers) do
-    assign_jobs(workers, [], done, [:idle|new_workers])
+
+  defp assign_jobs([:idle | workers], [], done, new_workers) do
+    assign_jobs(workers, [], done, [:idle | new_workers])
   end
-  defp assign_jobs([{cj, t}|workers], jobs, done, new_workers) do
+
+  defp assign_jobs([{cj, t} | workers], jobs, done, new_workers) do
     t1 = t + 1
+
     cond do
-      t1 > time(cj)-1 ->
+      t1 > time(cj) - 1 ->
         case jobs do
-          [j|jt] ->
+          [j | jt] ->
             if time(j) == 1 do
-              assign_jobs(workers, jt, [j|done], [{j, 0}|new_workers])
+              assign_jobs(workers, jt, [j | done], [{j, 0} | new_workers])
             else
-              assign_jobs(workers, jt, done, [{j, 0}|new_workers])
+              assign_jobs(workers, jt, done, [{j, 0} | new_workers])
             end
+
           [] ->
-            assign_jobs(workers, [], done, [:idle|new_workers])
+            assign_jobs(workers, [], done, [:idle | new_workers])
         end
-      t1 == time(cj)-1 ->
-        assign_jobs(workers, jobs, [cj|done], [{cj, t1}|new_workers])
+
+      t1 == time(cj) - 1 ->
+        assign_jobs(workers, jobs, [cj | done], [{cj, t1} | new_workers])
+
       true ->
-        assign_jobs(workers, jobs, done, [{cj, t1}|new_workers])
+        assign_jobs(workers, jobs, done, [{cj, t1} | new_workers])
     end
   end
 
@@ -141,8 +151,9 @@ defmodule Day7 do
       case x do
         :idle ->
           acc
+
         {step, _t} ->
-          [step|acc]
+          [step | acc]
       end
     end)
   end
